@@ -37,7 +37,7 @@ func addTodo(user, content string) error {
 
 func getTodos(user string) ([]todo, error) {
     var todo []todo
-    result := db.Where("user = ?", user).Find(&todo)
+    result := db.Where("user = ? AND completed = ?", user, false).Find(&todo)
     if result.Error != nil {
         return nil, result.Error
     }
@@ -48,7 +48,7 @@ func getTodos(user string) ([]todo, error) {
 func getAllTodos() ([]todo, error) {
     var todo []todo
     
-    result := db.Find(&todo)
+    result := db.Where("completed = ?", false).Find(&todo)
     if result.Error != nil {
         return nil, result.Error
     }

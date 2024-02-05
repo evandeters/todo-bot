@@ -34,8 +34,8 @@ func addTodoCommand(s *discordgo.Session, m *discordgo.MessageCreate, msgList []
 }
 
 func getTodosCommand(s *discordgo.Session, m *discordgo.MessageCreate, msgList []string) {
-    if len(msgList) == 3 {
-        user := msgList[2]
+    if len(msgList) == 2 {
+        user := msgList[1]
         todos, err := getTodos(user)
         if err != nil {
             s.ChannelMessageSend(m.ChannelID, "Error getting todos")
@@ -59,7 +59,7 @@ func getTodosCommand(s *discordgo.Session, m *discordgo.MessageCreate, msgList [
         return
     }
 
-    if len(msgList) == 2 {
+    if len(msgList) == 1 {
         todos, err := getAllTodos()
         if err != nil {
             s.ChannelMessageSend(m.ChannelID, "Error getting todos")

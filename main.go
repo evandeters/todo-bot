@@ -22,7 +22,7 @@ func init() {
 	flag.Parse()
 
     newCommand("todo", addTodoCommand).setHelp("Add a new todo. Usage is '!todo <user> <task>'").add()
-    newCommand("get-todo", getTodosCommand).setHelp("Get all todos. Usage is '!get-todo' for all todos and '!get-todo <user>' for user specific todos.").add()
+    newCommand("get", getTodosCommand).setHelp("Get all todos. Usage is '!get' for all todos and '!get-todo <user>' for user specific todos.").add()
     newCommand("remove", removeTodoCommand).setHelp("Remove all todos by user or remove by ID. Usage is '!remove <user | ID>'").add()
     newCommand("complete", completeTodoCommand).setHelp("Complete a todo. Usage is '!complete <id>'").add()
     newCommand("help", helpCommand).setHelp("Get help.").add()

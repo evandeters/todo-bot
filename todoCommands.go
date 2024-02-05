@@ -33,69 +33,78 @@ func addTodoCommand(s *discordgo.Session, m *discordgo.MessageCreate, msgList []
     s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
 }
 
-func getAllTodosCommand(s *discordgo.Session, m *discordgo.MessageCreate, msgList []string) {
-    todos, err := getAllTodos()
-    if err != nil {
-        s.ChannelMessageSend(m.ChannelID, "Error getting todos")
+func getTodosCommand(s *discordgo.Session, m *discordgo.MessageCreate, msgList []string) {
+    if len(msgList) == 3 {
+        user := msgList[2]
+        todos, err := getTodos(user)
+        if err != nil {
+            s.ChannelMessageSend(m.ChannelID, "Error getting todos")
+            return
+        }
+
+        if len(todos) == 0 {
+            s.ChannelMessageSend(m.ChannelID, "No todos found for " + user)
+            return
+        }
+
+        embed := embed.NewEmbed()
+        embed.SetTitle("Todos for " + user)
+        embed.SetColor(0x38fcec)
+
+        for _, t := range todos {
+            embed.AddField(fmt.Sprintf("Id: %d", t.Id), fmt.Sprintf("Task: %s\n Completed: %t", t.Task, t.Completed))
+        }
+
+        s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
         return
     }
 
-    embed := embed.NewEmbed()
-    embed.SetTitle("Todos")
-    embed.SetColor(0x38fcec)
+    if len(msgList) == 2 {
+        todos, err := getAllTodos()
+        if err != nil {
+            s.ChannelMessageSend(m.ChannelID, "Error getting todos")
+            return
+        }
 
-    for _, t := range todos {
-        embed.AddField(fmt.Sprintf("Id: %d", t.Id), fmt.Sprintf("User: %s\n Task: %s\n Completed: %t", t.User, t.Task, t.Completed))
+        embed := embed.NewEmbed()
+        embed.SetTitle("Todos")
+        embed.SetColor(0x38fcec)
+
+        for _, t := range todos {
+            embed.AddField(fmt.Sprintf("Id: %d", t.Id), fmt.Sprintf("User: %s\n Task: %s\n Completed: %t", t.User, t.Task, t.Completed))
+        }
+
+        s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
+        return
     }
 
-    s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
+    s.ChannelMessageSend(m.ChannelID, "Invalid command usage.")
 }
 
-func getTodosByUserCommand(s *discordgo.Session, m *discordgo.MessageCreate, msgList []string) {
-    if len(msgList) < 2 {
-        s.ChannelMessageSend(m.ChannelID, "User not provided")
+func removeTodoCommand(s *discordgo.Session, m *discordgo.MessageCreate, msgList []string) {
+    if len(msgList) != 2 {
+        s.ChannelMessageSend(m.ChannelID, "User or ID not provided")
         return
     }
 
-    user := msgList[1]
+    field := msgList[1]
+    if id, err := strconv.Atoi(field); err == nil {
+        err = deleteTodoById(id)
+        if err != nil {
+            s.ChannelMessageSend(m.ChannelID, "Error removing todo")
+            return
+        }
+        s.ChannelMessageSend(m.ChannelID, "Todo removed")
+        return
+    }
     
-    todos, err := getTodos(user)
-    if err != nil {
-        s.ChannelMessageSend(m.ChannelID, "Error getting todos")
-        return
-    }
-
-    if len(todos) == 0 {
-        s.ChannelMessageSend(m.ChannelID, "No todos found for " + user)
-        return
-    }
-
-    embed := embed.NewEmbed()
-    embed.SetTitle("Todos for " + user)
-    embed.SetColor(0x38fcec)
-
-    for _, t := range todos {
-        embed.AddField(fmt.Sprintf("Id: %d", t.Id), fmt.Sprintf("Task: %s\n Completed: %t", t.Task, t.Completed))
-    }
-
-    s.ChannelMessageSendEmbed(m.ChannelID, embed.MessageEmbed)
-}
-
-func removeTodoByUserCommand(s *discordgo.Session, m *discordgo.MessageCreate, msgList []string) {
-    if len(msgList) < 2 {
-        s.ChannelMessageSend(m.ChannelID, "User not provided")
-        return
-    }
-
-    user := msgList[1]
-    
-    err := deleteTodos(user)
+    err := deleteTodos(field)
     if err != nil {
         s.ChannelMessageSend(m.ChannelID, "Error removing todo")
         return
     }
 
-    s.ChannelMessageSend(m.ChannelID, "Todos removed for " + user)
+    s.ChannelMessageSend(m.ChannelID, "Todos removed for " + field)
 }
 
 func completeTodoCommand(s *discordgo.Session, m *discordgo.MessageCreate, msgList []string) {
@@ -105,12 +114,19 @@ func completeTodoCommand(s *discordgo.Session, m *discordgo.MessageCreate, msgLi
         return
     }
     
-    err = completeTodoById(id)
+    todoRes, err := completeTodoById(id)
     if err != nil {
         s.ChannelMessageSend(m.ChannelID, "Error completing todo")
         return
     }
-    s.ChannelMessageSend(m.ChannelID, "Todo completed")
+
+    embed := embed.NewEmbed()
+    embed.SetTitle("Todo Completed")
+    embed.SetColor(0x38fcec)
+    embed.AddField("User", todoRes.User)
+    embed.AddField("Task", todoRes.Task)
+
+    s.ChannelMessageSendEmbed("1203949124240539698", embed.MessageEmbed)
 }
 
 func updateTodoCommand(s *discordgo.Session, m *discordgo.MessageCreate, msgList []string) {

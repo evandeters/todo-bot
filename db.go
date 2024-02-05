@@ -55,12 +55,27 @@ func getAllTodos() ([]todo, error) {
     return todo, nil
 }
 
-func completeTodoById(id int) error {
-    return db.Model(&todo{}).Where("Id = ?", id).Update("completed", true).Error
+func completeTodoById(id int) (todo, error) {
+    var todoRes todo
+    result := db.Where("Id = ?", id).First(&todoRes)
+    if result.Error != nil {
+        return todo{}, result.Error
+    }
+
+    result = db.Model(&todo{}).Where("Id = ?", id).Update("completed", true)
+    if result.Error != nil {
+        return todo{}, result.Error
+    }
+
+    return todoRes, nil
 }
 
 func deleteTodos(user string) error {
     return db.Where("user = ?", user).Delete(&todo{}).Error
+}
+
+func deleteTodoById(id int) error {
+    return db.Where("Id = ?", id).Delete(&todo{}).Error
 }
 
 func updateTodoById(id int, content string) error {

@@ -15,7 +15,7 @@ type todo struct {
 }
 
 func ConnectDB() *gorm.DB {
-    db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+    db, err := gorm.Open(sqlite.Open("todo.db"), &gorm.Config{})
     if err != nil {
         panic("Failed to connect to database!")
     }

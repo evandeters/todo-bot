@@ -15,16 +15,21 @@ var (
 	Token string
     prefix = "!"
     db = ConnectDB()
+    tomlConf = Config{}
 )
 
 func init() {
 	flag.StringVar(&Token, "t", "", "Bot Token")
 	flag.Parse()
 
+    ReadConfig(&tomlConf, "config.conf")
+
     newCommand("todo", addTodoCommand).setHelp("Add a new todo. Usage is '!todo <user> <task>'").add()
     newCommand("get", getTodosCommand).setHelp("Get all todos. Usage is '!get' for all todos and '!get-todo <user>' for user specific todos.").add()
     newCommand("remove", removeTodoCommand).setHelp("Remove all todos by user or remove by ID. Usage is '!remove <user | ID>'").add()
     newCommand("complete", completeTodoCommand).setHelp("Complete a todo. Usage is '!complete <id>'").add()
+    newCommand("update", updateTodoCommand).setHelp("Update a todo. Usage is '!update <id> <new task>'").add()
+    newCommand("clone", clonePodCommand).setHelp("Clone a pod. Usage is '!clone <pod name>'").add()
     newCommand("help", helpCommand).setHelp("Get help.").add()
 }
 
@@ -70,4 +75,3 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
     parseCommand(s, m, m.Content[len(prefix):])
 }
-

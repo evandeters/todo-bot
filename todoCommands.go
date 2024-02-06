@@ -10,7 +10,7 @@ import (
 )
 
 func addTodoCommand(s *discordgo.Session, m *discordgo.MessageCreate, msgList []string) {
-    if len(msgList) < 1 {
+    if len(msgList) < 2 {
         s.ChannelMessageSend(m.ChannelID, "User and todo not provided")
         return
     }

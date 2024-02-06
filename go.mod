@@ -3,6 +3,7 @@ module todo-bot
 go 1.21.5
 
 require (
+	github.com/BurntSushi/toml v1.3.2
 	github.com/Clinet/discordgo-embed v0.0.0-20220113222025-bafe0c917646
 	github.com/bwmarrin/discordgo v0.27.1
 	gorm.io/driver/sqlite v1.5.4
@@ -10,7 +11,6 @@ require (
 )
 
 require (
-	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect

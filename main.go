@@ -30,6 +30,7 @@ func init() {
     newCommand("complete", completeTodoCommand).setHelp("Complete a todo. Usage is '!complete <id>'").add()
     newCommand("update", updateTodoCommand).setHelp("Update a todo. Usage is '!update <id> <new task>'").add()
     newCommand("clone", clonePodCommand).setHelp("Clone a pod. Usage is '!clone <pod name>'").add()
+    newCommand("pods", getPodsCommand).setHelp("Get all pods.").add()
     newCommand("help", helpCommand).setHelp("Get help.").add()
 }
 
